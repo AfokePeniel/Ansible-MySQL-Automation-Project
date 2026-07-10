@@ -1,0 +1,79 @@
+---
+- name: MySQL Database Server Setup
+  hosts: dbservers
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install MySQL server and dependencies
+      ansible.builtin.dnf:
+        name:
+          - mysql-server
+          - python3-PyMySQL
+        state: present
+
+    - name: Start and enable MySQL service
+      ansible.builtin.systemd:
+        name: mysqld
+        state: started
+        enabled: true
+
+    - name: Open MySQL port in firewalld
+      ansible.posix.firewalld:
+        service: mysql
+        permanent: true
+        state: enabled
+        immediate: true
+
+    - name: Set MySQL root password
+      community.mysql.mysql_user:
+        name: root
+        password: "{{ mysql_root_password }}"
+        login_unix_socket: /var/lib/mysql/mysql.sock
+        state: present
+
+    - name: Create /root/.my.cnf with root credentials
+      ansible.builtin.copy:
+        dest: /root/.my.cnf
+        content: |
+          [client]
+          user=root
+          password={{ mysql_root_password }}
+        mode: '0600'
+
+    - name: Remove anonymous MySQL users
+      community.mysql.mysql_user:
+        name: ''
+        host_all: true
+        state: absent
+
+    - name: Remove MySQL test database
+      community.mysql.mysql_db:
+        name: test
+        state: absent
+
+    - name: Create application database
+      community.mysql.mysql_db:
+        name: "{{ app_db_name }}"
+        state: present
+
+    - name: Create application user with least privilege
+      community.mysql.mysql_user:
+        name: "{{ app_db_user }}"
+        password: "{{ app_db_password }}"
+        priv: "{{ app_db_name }}.*:SELECT,INSERT,UPDATE,DELETE"
+        host: '%'
+        state: present
+
+    - name: Create backup directory
+      ansible.builtin.file:
+        path: /var/backups/mysql
+        state: directory
+        mode: '0750'
+
+    - name: Schedule nightly mysqldump backup
+      ansible.builtin.cron:
+        name: "nightly mysql backup"
+        minute: "0"
+        hour: "2"
+        job: "/usr/bin/mysqldump --all-databases | gzip > /var/backups/mysql/backup-$(date +\\%F).sql.gz"
