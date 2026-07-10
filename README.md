@@ -24,19 +24,21 @@ least-privilege app user, and scheduled backups.
 - Hostname resolution: node1's IP and hostname added to /etc/hosts on the control node
 - Dedicated `ansible` service user created on both nodes with passwordless sudo
 - Passwordless SSH configured from control node to node1 for the ansible user
-- ansible-core installed on the control node
+- ansible-core installed on the control node 
+
 
 ## Project Structure
 
-mysql-automation/    # root project folder
-ansible.cfg          # Project config: inventory path, privilege escalation, collections/roles paths
-inventory.ini        # Defines the dbservers group containing node1
-requirements.yml     # Collection dependencies: community.mysql, ansible.posix
-vars.yml             # Variables: passwords, database name, app user
-mysql-setup.yml      # Main playbook, full MySQL provisioning end to end
-collections/         # Project-scoped collection installs
-roles/               # Project-scoped roles 
-
+```
+mysql-automation/
+├── ansible.cfg          # Project config: inventory path, privilege escalation, collections/roles paths
+├── inventory.ini        # Defines the dbservers group containing node1
+├── requirements.yml     # Collection dependencies: community.mysql, ansible.posix
+├── vars.yml             # Variables: passwords, database name, app user
+├── mysql-setup.yml      # Main playbook, full MySQL provisioning end to end
+├── collections/         # Project-scoped collection installs
+└── roles/               # Project-scoped roles (empty for now)
+```
 
 ## Collections Used
 
