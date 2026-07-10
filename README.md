@@ -28,14 +28,14 @@ least-privilege app user, and scheduled backups.
 
 ## Project Structure
 
-mysql-automation/
-├── ansible.cfg          # Project config: inventory path, privilege escalation, collections/roles paths
-├── inventory.ini        # Defines the dbservers group containing node1
-├── requirements.yml     # Collection dependencies: community.mysql, ansible.posix
-├── vars.yml             # Variables: passwords, database name, app user
-├── mysql-setup.yml      # Main playbook, full MySQL provisioning end to end
-├── collections/         # Project-scoped collection installs
-└── roles/               # Project-scoped roles (empty for now)
+mysql-automation/    # root project folder
+ansible.cfg          # Project config: inventory path, privilege escalation, collections/roles paths
+inventory.ini        # Defines the dbservers group containing node1
+requirements.yml     # Collection dependencies: community.mysql, ansible.posix
+vars.yml             # Variables: passwords, database name, app user
+mysql-setup.yml      # Main playbook, full MySQL provisioning end to end
+collections/         # Project-scoped collection installs
+roles/               # Project-scoped roles 
 
 
 ## Collections Used
